@@ -1548,3 +1548,124 @@ body {
     background: #dbeafe;
     color: #1e40af;
 }
+
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+        height: auto;
+    }
+
+    .pos-container {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .pos-header {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .header-left {
+        gap: 8px;
+    }
+
+    .header-left h1 {
+        font-size: 14px;
+    }
+
+    .store-info {
+        font-size: 10px;
+    }
+
+    .header-center {
+        order: 3;
+        max-width: 100%;
+        margin: 0;
+        width: 100%;
+    }
+
+    .search-bar input {
+        padding: 8px 35px 8px 32px;
+        font-size: 12px;
+    }
+
+    .header-right {
+        gap: 5px;
+    }
+
+    .btn-icon {
+        padding: 6px;
+        font-size: 13px;
+    }
+
+    .date-time {
+        font-size: 10px;
+        display: none;
+    }
+
+    .pos-main {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: auto;
+    }
+
+    .products-panel {
+        padding: 10px;
+    }
+
+    .inventory-table th,
+    .inventory-table td {
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+
+    .inventory-table th:nth-child(4),
+    .inventory-table td:nth-child(4) {
+        display: none;
+    }
+
+    .cart-side-panel {
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: 40vh;
+        z-index: 100;
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+    }
+
+    .cart-side-items {
+        max-height: 120px;
+    }
+
+    .modal-content {
+        width: 98%;
+        margin: 10px;
+        max-height: 90vh;
+    }
+
+    .modal-body {
+        padding: 15px;
+    }
+
+    .btn-sm {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .inventory-table th:nth-child(3),
+    .inventory-table td:nth-child(3) {
+        display: none;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}

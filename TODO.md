@@ -1,18 +1,13 @@
-# PWA Implementation TODO
+# Mobile Responsive Fixes - TODO
 
-- [x] Create manifest.json
-- [x] Create sw.js (Service Worker)
-- [x] Add PWA meta tags to login.html
-- [x] Add PWA meta tags to index.html
-- [x] Add PWA meta tags to checkout.html
-- [x] Add PWA meta tags to management.html
-- [x] Add PWA meta tags to reports.html
-- [x] Add service worker registration to login.html
-- [x] Add service worker registration to index.html
-- [x] Add service worker registration to checkout.html
-- [x] Add service worker registration to management.html
-- [x] Add service worker registration to reports.html
-- [ ] User: Create icon-192.png and icon-512.png
-- [ ] User: Run firebase deploy
-
+- [x] Update styles.css - Append mobile responsive fixes
+- [x] Update checkout.css - Replace existing media query with new mobile fixes
+- [x] Update management.css - Replace existing media query with new mobile fixes
+- [x] Update reports.css - Append mobile responsive fixes
+- [x] Update auth.css - Append mobile responsive fixes
+- [x] Update index.html - Update viewport meta tag
+- [x] Update checkout.html - Update viewport meta tag
+- [x] Update login.html - Update viewport meta tag
+- [x] Update management.html - Update viewport meta tag
+- [x] Update reports.html - Update viewport meta tag
 

@@ -489,28 +489,63 @@ body {
     border-radius: 4px;
 }
 
-/* Responsive */
+/* Mobile Responsive */
 @media (max-width: 768px) {
+    .management-container {
+        padding: 10px;
+    }
+
     .management-header {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .header-actions {
         flex-wrap: wrap;
         justify-content: center;
     }
-    
+
+    .header-actions button {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+
+    .stat-info span {
+        font-size: 18px;
+    }
+
     .filter-bar {
         flex-direction: column;
     }
-    
-    .form-row {
-        flex-direction: column;
+
+    .search-box {
+        min-width: 100%;
     }
-    
+
     .inventory-table-wrapper {
         overflow-x: auto;
+    }
+
+    .inventory-table {
+        min-width: 800px;
+    }
+
+    .valuation-details > div {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
     }
 }
 

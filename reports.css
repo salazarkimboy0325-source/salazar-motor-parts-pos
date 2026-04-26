@@ -1121,3 +1121,104 @@ body {
     font-size: 13px;
     color: #9ca3af;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .reports-container {
+        padding: 10px;
+    }
+
+    .reports-header {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .header-left-section {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .header-left-section h1 {
+        font-size: 18px;
+    }
+
+    .date-range-selector {
+        flex-wrap: wrap;
+    }
+
+    .date-range-selector input {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .quick-date-buttons {
+        gap: 4px;
+    }
+
+    .btn-date {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .summary-card {
+        padding: 12px;
+    }
+
+    .card-value {
+        font-size: 18px;
+    }
+
+    .reports-main-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .report-card.full-width {
+        grid-column: 1;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+
+    .table-container {
+        max-height: 250px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+
+    .expense-summary {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .daily-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .daily-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .data-table th:nth-child(4),
+    .data-table td:nth-child(4),
+    .data-table th:nth-child(5),
+    .data-table td:nth-child(5) {
+        display: none;
+    }
+}

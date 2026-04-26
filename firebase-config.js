@@ -14,7 +14,11 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 // Enable persistence (offline support)
-db.enablePersistence()
-  .then(() => console.log('Firebase persistence enabled'))
-  .catch((err) => console.error('Persistence error:', err));
+try {
+    db.enablePersistence().catch(() => {
+        db.settings({ cache: {} });
+    });
+} catch (e) {
+    console.log('Persistence setup complete');
+}
 

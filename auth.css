@@ -317,3 +317,32 @@ body {
     color: #1e40af;
 }
 
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 10px;
+    }
+
+    .auth-card {
+        padding: 25px 20px;
+    }
+
+    .auth-logo h1 {
+        font-size: 20px;
+    }
+
+    .auth-logo i {
+        font-size: 36px;
+    }
+
+    .form-group input {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .btn-auth {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+

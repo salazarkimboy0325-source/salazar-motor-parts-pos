@@ -581,25 +581,47 @@ body {
     background: #64748b;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
+/* Mobile Responsive */
+@media (max-width: 768px) {
     .checkout-container {
         padding: 10px;
     }
-    
+
+    .checkout-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .checkout-header h2 {
+        font-size: 16px;
+    }
+
     .customer-section {
         grid-template-columns: 1fr;
     }
-    
+
     .discount-section {
         grid-template-columns: 1fr 1fr;
     }
-    
+
     .discount-section .btn-secondary {
         grid-column: span 2;
     }
-    
+
     .quick-cash {
         grid-template-columns: repeat(3, 1fr);
+    }
+
+    .payment-methods {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cart-item {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .cart-item-quantity {
+        margin: 5px 0;
     }
 }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Checkout - Motor Parts POS</title>
     <link rel="stylesheet" href="checkout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -108,7 +108,375 @@
             <div class="payment-methods">
                 <button class="payment-btn active" data-method="cash">
                     <i class="fas fa-money-bill-wave"></i> Cash
-                </button>
+                </button>Update styles.css - Add mobile fixes at the end:
+css
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+        height: auto;
+    }
+
+    .pos-container {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .pos-header {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .header-left {
+        gap: 8px;
+    }
+
+    .header-left h1 {
+        font-size: 14px;
+    }
+
+    .store-info {
+        font-size: 10px;
+    }
+
+    .header-center {
+        order: 3;
+        max-width: 100%;
+        margin: 0;
+        width: 100%;
+    }
+
+    .search-bar input {
+        padding: 8px 35px 8px 32px;
+        font-size: 12px;
+    }
+
+    .header-right {
+        gap: 5px;
+    }
+
+    .btn-icon {
+        padding: 6px;
+        font-size: 13px;
+    }
+
+    .date-time {
+        font-size: 10px;
+        display: none;
+    }
+
+    .pos-main {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: auto;
+    }
+
+    .products-panel {
+        padding: 10px;
+    }
+
+    .inventory-table th,
+    .inventory-table td {
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+
+    .inventory-table th:nth-child(4),
+    .inventory-table td:nth-child(4) {
+        display: none;
+    }
+
+    .cart-side-panel {
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: 40vh;
+        z-index: 100;
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+    }
+
+    .cart-side-items {
+        max-height: 120px;
+    }
+
+    .modal-content {
+        width: 98%;
+        margin: 10px;
+        max-height: 90vh;
+    }
+
+    .modal-body {
+        padding: 15px;
+    }
+
+    .btn-sm {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .inventory-table th:nth-child(3),
+    .inventory-table td:nth-child(3) {
+        display: none;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+Update checkout.css - Add mobile fixes:
+css
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .checkout-container {
+        padding: 10px;
+    }
+
+    .checkout-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .checkout-header h2 {
+        font-size: 16px;
+    }
+
+    .customer-section {
+        grid-template-columns: 1fr;
+    }
+
+    .discount-section {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .discount-section .btn-secondary {
+        grid-column: span 2;
+    }
+
+    .quick-cash {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .payment-methods {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cart-item {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .cart-item-quantity {
+        margin: 5px 0;
+    }
+}
+Update management.css - Add mobile fixes:
+css
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .management-container {
+        padding: 10px;
+    }
+
+    .management-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .header-actions button {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+
+    .stat-info span {
+        font-size: 18px;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+    }
+
+    .search-box {
+        min-width: 100%;
+    }
+
+    .inventory-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .inventory-table {
+        min-width: 800px;
+    }
+
+    .valuation-details > div {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+Update reports.css - Add mobile fixes:
+css
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .reports-container {
+        padding: 10px;
+    }
+
+    .reports-header {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .header-left-section {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .header-left-section h1 {
+        font-size: 18px;
+    }
+
+    .date-range-selector {
+        flex-wrap: wrap;
+    }
+
+    .date-range-selector input {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .quick-date-buttons {
+        gap: 4px;
+    }
+
+    .btn-date {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .summary-card {
+        padding: 12px;
+    }
+
+    .card-value {
+        font-size: 18px;
+    }
+
+    .reports-main-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .report-card.full-width {
+        grid-column: 1;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+
+    .table-container {
+        max-height: 250px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+
+    .expense-summary {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .daily-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .daily-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .data-table th:nth-child(4),
+    .data-table td:nth-child(4),
+    .data-table th:nth-child(5),
+    .data-table td:nth-child(5) {
+        display: none;
+    }
+}
+Update auth.css - Add mobile fixes:
+css
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 10px;
+    }
+
+    .auth-card {
+        padding: 25px 20px;
+    }
+
+    .auth-logo h1 {
+        font-size: 20px;
+    }
+
+    .auth-logo i {
+        font-size: 36px;
+    }
+
+    .form-group input {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .btn-auth {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+Add viewport meta tag to ALL HTML files:
+Make sure every HTML file has this in the <head>:
+
+html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+Now your POS will work properly on phones!
+
+
                 <button class="payment-btn" data-method="card">
                     <i class="fas fa-credit-card"></i> Card
                 </button>
