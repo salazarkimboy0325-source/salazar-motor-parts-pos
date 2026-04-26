@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management - Motor Parts POS</title>
+    <link rel="stylesheet" href="management.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <script>
+        if (!localStorage.getItem('currentUser')) {
+            window.location.href = 'login.html';
+        }
+        // Only admin and manager can access management
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (currentUser.role !== 'admin' && currentUser.role !== 'manager') {
+            alert('Access denied. Only admin and manager can access this page.');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <header class="pos-header">
+        <div class="header-left">
+            <h1><i class="fas fa-motorcycle"></i> Salazar Motor Parts</h1>
+            <span class="store-info">Store #001 | <span id="cashierPosition"></span>: <span id="cashierName">-</span></span>
+        </div>
+        <div class="header-right">
+            <div class="date-time" id="dateTime"></div>
+        </div>
+    </header>
+    <div class="management-container">
+        <!-- Header -->
+        <div class="management-header">
+            <a href="index.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back to POS
+            </a>
+            <h1><i class="fas fa-tools"></i> Inventory Management</h1>
+            <div class="header-actions">
+                <button class="btn-primary" id="openAddItemModal">
+                    <i class="fas fa-plus-circle"></i> Add New Part
+                </button>
+                <button class="btn-secondary" id="openBulkAddModal">
+                    <i class="fas fa-layer-group"></i> Bulk Add
+                </button>
+                <button class="btn-secondary" id="manageCategoriesBtn">
+                    <i class="fas fa-tags"></i> Categories
+                </button>
+                <button class="btn-secondary" id="openHistoryBtn">
+                    <i class="fas fa-history"></i> History
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #dbeafe;">
+                    <i class="fas fa-boxes" style="color: #2563eb;"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Total Parts</h4>
+                    <span id="totalParts">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fee2e2;">
+                    <i class="fas fa-exclamation-triangle" style="color: #dc2626;"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Out of Stock</h4>
+                    <span id="outOfStockCount">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fef3c7;">
+                    <i class="fas fa-exclamation-circle" style="color: #d97706;"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Low Stock</h4>
+                    <span id="lowStockCount">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #d1fae5;">
+                    <i class="fas fa-tags" style="color: #059669;"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Stock Value (Selling Price)</h4>
+                    <span id="totalStockValue">₱0.00</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e0e7ff;">
+                    <i class="fas fa-coins" style="color: #4f46e5;"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Stock Value (Cost Price)</h4>
+                    <span id="totalCostValue">₱0.00</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fce7f3;">
+                    <i class="fas fa-chart-pie" style="color: #db2777;"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Total Stock Value</h4>
+                    <span id="totalValue">₱0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Valuation Details -->
+        <div class="valuation-details" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--shadow);">
+            <h3 style="margin-bottom: 15px;"><i class="fas fa-calculator"></i> Stock Valuation Details</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
+                    <h4 style="color: #059669; margin-bottom: 10px;">
+                        <i class="fas fa-check-circle"></i> Items WITH Cost 
+                        (<span id="mgmtWithCostCount">0</span> items)
+                    </h4>
+                    <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                        <span>Selling Price Value:</span>
+                        <strong id="mgmtWithCostValue" style="color: #059669;">₱0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                        <span>Cost Value:</span>
+                        <strong id="mgmtWithCostCost" style="color: #dc2626;">₱0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 5px 0; border-top: 1px solid #bbf7d0; margin-top: 5px;">
+                        <span>Potential Profit:</span>
+                        <strong style="color: #2563eb;" id="mgmtWithCostProfit">₱0.00</strong>
+                    </div>
+                </div>
+                <div style="background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a;">
+                    <h4 style="color: #d97706; margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-circle"></i> Items WITHOUT Cost 
+                        (<span id="mgmtWithoutCostCount">0</span> items)
+                    </h4>
+                    <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                        <span>Selling Price Value:</span>
+                        <strong id="mgmtWithoutCostValue" style="color: #d97706;">₱0.00</strong>
+                    </div>
+                    <p style="font-size: 11px; color: #92400e; margin-top: 10px;">Add cost prices to calculate profit margins</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Bar -->
+        <div class="settings-bar">
+            <div class="setting-item">
+                <label>Low Stock Threshold:</label>
+                <input type="number" id="lowStockThreshold" value="5" min="1" max="100" style="width: 80px;">
+                <button class="btn-secondary btn-sm" id="saveThreshold">Save</button>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchParts" placeholder="Search by part name, number, brand...">
+            </div>
+            <select id="categoryFilter">
+                <option value="all">All Categories</option>
+            </select>
+            <select id="stockFilter">
+                <option value="all">All Stock</option>
+                <option value="out">Out of Stock</option>
+                <option value="low">Low Stock (≤5)</option>
+                <option value="in">In Stock</option>
+            </select>
+            <button class="btn-secondary" id="exportInventoryBtn">
+                <i class="fas fa-download"></i> Export CSV
+            </button>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="inventory-table-wrapper">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Part Number</th>
+                        <th>Part Name</th>
+                        <th>Category</th>
+                        <th>Brand</th>
+                        <th>Vehicles</th>
+                        <th>Price</th>
+                        <th>Cost</th>
+                        <th>Stock</th>
+                        <th>Supplier</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                    <tr class="empty-state">
+                        <td colspan="10">
+                            <i class="fas fa-box-open"></i>
+                            <p>No parts in inventory</p>
+                            <p class="sub-text">Click "Add New Part" to get started</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- History Modal -->
+        <div class="modal" id="historyModal">
+            <div class="modal-content modal-lg">
+                <div class="modal-header">
+                    <h2><i class="fas fa-history"></i> Inventory History</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- History Summary Cards -->
+                    <div class="history-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                        <div style="background: #dbeafe; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 700; color: #2563eb;" id="histTotalAdded">0</div>
+                            <div style="font-size: 11px; color: #1e40af;">Total Added</div>
+                        </div>
+                        <div style="background: #d1fae5; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 700; color: #059669;" id="histTotalEdited">0</div>
+                            <div style="font-size: 11px; color: #065f46;">Total Edited</div>
+                        </div>
+                        <div style="background: #fee2e2; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 700; color: #dc2626;" id="histTotalDeleted">0</div>
+                            <div style="font-size: 11px; color: #991b1b;">Total Deleted</div>
+                        </div>
+                        <div style="background: #fef3c7; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 700; color: #d97706;" id="histLastActivity">-</div>
+                            <div style="font-size: 11px; color: #92400e;">Last Activity</div>
+                        </div>
+                    </div>
+                    
+                    <!-- History Filters -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                        <input type="text" id="historySearch" placeholder="Search by part name or number..." style="flex: 1; padding: 8px; border: 2px solid #d1d5db; border-radius: 8px;">
+                        <select id="historyActionFilter" style="padding: 8px; border: 2px solid #d1d5db; border-radius: 8px;">
+                            <option value="all">All Actions</option>
+                            <option value="added">Added</option>
+                            <option value="edited">Edited</option>
+                            <option value="deleted">Deleted</option>
+                            <option value="bulk_added">Bulk Added</option>
+                        </select>
+                        <button class="btn-secondary" id="clearHistoryBtn">
+                            <i class="fas fa-trash"></i> Clear History
+                        </button>
+                    </div>
+                    
+                    <!-- History Table -->
+                    <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Action</th>
+                                    <th>Part Number</th>
+                                    <th>Part Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <tr class="empty-state">
+                                    <td colspan="8">
+                                        <i class="fas fa-history"></i>
+                                        <p>No history recorded</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary close-modal-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="modal" id="addItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Part</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Part Number/SKU *</label>
+                        <input type="text" id="newPartNumber" placeholder="e.g., BRK-001">
+                    </div>
+                    <div class="form-group">
+                        <label>Barcode (Optional)</label>
+                        <input type="text" id="newBarcode" placeholder="Scan or enter barcode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Part Name *</label>
+                    <input type="text" id="newPartName" placeholder="e.g., Brake Pad Set">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="newCategory">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Brand/Manufacturer</label>
+                        <input type="text" id="newBrand" placeholder="e.g., NGK, Bosch">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Unit Price (₱) *</label>
+                        <input type="number" id="newPrice" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Cost Price (₱)</label>
+                        <input type="number" id="newCost" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Initial Stock</label>
+                        <input type="number" id="newStock" value="0" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Supplier</label>
+                    <input type="text" id="newSupplier" placeholder="Supplier name">
+                </div>
+                <div class="form-group">
+                    <label>Compatible Vehicles</label>
+                    <input type="text" id="newVehicles" placeholder="e.g., Honda Civic 2016-2020, Toyota Vios 2018+">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="newNotes" rows="2" placeholder="Additional information..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal-btn">Cancel</button>
+                <button class="btn-primary" id="saveNewItem">Save Part</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Add Modal -->
+    <div class="modal" id="bulkAddModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2><i class="fas fa-layer-group"></i> Bulk Add Parts</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">Add multiple parts at once. Enter one part per line in format: Part Number, Part Name, Category, Price, Cost, Stock, Brand, Supplier</p>
+                <textarea id="bulkPartsData" rows="8" placeholder="Example:
+BRK-001, Brake Pad Set, brake, 45.00, 30.00, 10, Brembo, AutoSupply Co.
+ENG-001, Piston Ring, engine, 25.50, 18.00, 15, NPR, MotorParts Inc."></textarea>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="skipDuplicates" checked> Skip duplicate part numbers
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal-btn">Cancel</button>
+                <button class="btn-primary" id="processBulkAdd">Import Parts</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Management Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-tags"></i> Manage Categories</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="newCategoryName" placeholder="Enter category name" style="flex: 1;">
+                    <button class="btn-primary" id="addNewCategory">Add</button>
+                </div>
+                <div class="category-list" id="categoryList"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="resetCategories">Reset to Default</button>
+                <button class="btn-primary close-modal-btn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Item Modal -->
+    <div class="modal" id="editItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Part</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="editItemBody">
+                <!-- Filled dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal-btn">Cancel</button>
+                <button class="btn-primary" id="updateItem">Update Part</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase config -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Page scripts -->
+    <script src="management.js"></script>
+</body>
+</html>

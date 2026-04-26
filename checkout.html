@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Motor Parts POS</title>
+    <link rel="stylesheet" href="checkout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <script>
+        if (!localStorage.getItem('currentUser')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <header class="pos-header">
+        <div class="header-left">
+            <h1><i class="fas fa-motorcycle"></i> Salazar Motor Parts</h1>
+            <span class="store-info">Store #001 | <span id="cashierPosition"></span>: <span id="cashierName">-</span></span>
+        </div>
+        <div class="header-right">
+            <div class="date-time" id="dateTime"></div>
+        </div>
+    </header>
+    <div class="checkout-container">
+        <!-- Header -->
+        <div class="checkout-header">
+            <a href="index.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Inventory
+            </a>
+            <h2><i class="fas fa-shopping-cart"></i> Checkout</h2>
+            <button class="btn-danger" id="clearCartBtn">
+                <i class="fas fa-trash"></i> Clear Cart
+            </button>
+        </div>
+
+        <!-- Cart Section -->
+        <div class="cart-section">
+            <div class="cart-header">
+                <h3>Current Sale</h3>
+                <span id="cartCount">0 items</span>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-basket"></i>
+                    <p>Cart is empty</p>
+                    <p class="sub-text">Add items from inventory first</p>
+                </div>
+            </div>
+
+            <!-- Customer Info -->
+            <div class="customer-section">
+                <div class="form-group">
+                    <label>Customer Name (Optional)</label>
+                    <input type="text" id="customerName" placeholder="Walk-in Customer">
+                </div>
+                <div class="form-group">
+                    <label>Vehicle Info (Optional)</label>
+                    <input type="text" id="vehicleInfo" placeholder="e.g., Honda Civic 2020">
+                </div>
+            </div>
+
+            <!-- Discount -->
+            <div class="discount-section">
+                <div class="form-group">
+                    <label>Discount %</label>
+                    <input type="number" id="discountPercent" placeholder="0" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label>or Amount (₱)</label>
+                    <input type="number" id="discountAmount" placeholder="0.00" step="0.01" min="0">
+                </div>
+                <button class="btn-secondary" id="applyDiscountBtn">Apply</button>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">₱0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>VAT (0%)</span>
+                    <span id="tax">₱0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Discount</span>
+                    <span id="discount">-₱0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="total">₱0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="payment-section">
+            <h3><i class="fas fa-credit-card"></i> Payment</h3>
+            
+            <label>Payment Method</label>
+            <div class="payment-methods">
+                <button class="payment-btn active" data-method="cash">
+                    <i class="fas fa-money-bill-wave"></i> Cash
+                </button>
+                <button class="payment-btn" data-method="card">
+                    <i class="fas fa-credit-card"></i> Card
+                </button>
+                <button class="payment-btn" data-method="gcash">
+                    <i class="fas fa-mobile-alt"></i> GCash
+                </button>
+                <button class="payment-btn" data-method="bank_transfer">
+                    <i class="fas fa-university"></i> Bank Transfer
+                </button>
+            </div>
+
+            <!-- Cash Payment Fields -->
+            <div id="cashPayment">
+                <label>Amount Received (₱)</label>
+                <div class="quick-cash">
+                    <button class="cash-amount" data-amount="50">₱50</button>
+                    <button class="cash-amount" data-amount="100">₱100</button>
+                    <button class="cash-amount" data-amount="200">₱200</button>
+                    <button class="cash-amount" data-amount="500">₱500</button>
+                    <button class="cash-amount" data-amount="1000">₱1,000</button>
+                </div>
+                <input type="number" id="amountReceived" placeholder="Enter amount received..." step="0.01">
+                
+                <div class="change-display" id="changeDisplay">
+                    <span>Change Due:</span>
+                    <strong id="changeAmount">₱0.00</strong>
+                </div>
+            </div>
+
+            <!-- Card Payment Fields -->
+            <div id="cardPayment" style="display: none;">
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Expiry</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="text" id="cardCVV" placeholder="XXX" maxlength="3">
+                    </div>
+                </div>
+            </div>
+
+            <!-- GCash Payment Fields -->
+            <div id="mobilePayment" style="display: none;">
+                <div class="form-group">
+                    <label>Reference Number</label>
+                    <input type="text" id="referenceNumber" placeholder="Enter GCash reference number">
+                </div>
+            </div>
+
+            <!-- Bank Transfer Fields -->
+            <div id="bankPayment" style="display: none;">
+                <div class="form-group">
+                    <label>Bank</label>
+                    <select id="bankName">
+                        <option value="">Select Bank</option>
+                        <option value="bdo">BDO</option>
+                        <option value="bpi">BPI</option>
+                        <option value="metrobank">Metrobank</option>
+                        <option value="landbank">Landbank</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Transaction Reference</label>
+                    <input type="text" id="bankReference" placeholder="Enter reference number">
+                </div>
+            </div>
+
+            <button class="process-btn" id="processPaymentBtn">
+                <i class="fas fa-check-circle"></i> Process Payment
+            </button>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal" id="receiptModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-receipt"></i> Receipt</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="receiptContent">
+                <!-- Receipt will be generated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="printReceiptBtn">
+                    <i class="fas fa-print"></i> Print
+                </button>
+                <a href="index.html" class="process-btn" style="text-decoration: none; display: inline-flex; width: auto; padding: 10px 20px;">
+                    <i class="fas fa-plus-circle"></i> New Sale
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase config -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Page scripts -->
+    <script src="checkout.js"></script>
+</body>
+</html>

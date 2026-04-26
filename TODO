@@ -1,0 +1,287 @@
+Next update 
+
+Update in index.html - Replace the checkout panel:
+Find this section:
+
+html
+<!-- Right Panel - Checkout Button -->
+<div class="checkout-panel">
+    <div class="checkout-panel-content">
+        <div class="cart-summary-mini">
+            <div class="mini-row">
+                <span>Items in Cart:</span>
+                <strong id="cartCount">0</strong>
+            </div>
+            <div class="mini-row">
+                <span>Total:</span>
+                <strong id="cartTotal">₱0.00</strong>
+            </div>
+        </div>
+        <a href="checkout.html" class="checkout-btn" id="goToCheckout">
+            <i class="fas fa-shopping-cart"></i> Proceed to Checkout
+        </a>
+        <button class="clear-cart-btn" id="clearCartBtn">
+            <i class="fas fa-trash"></i> Clear Cart
+        </button>
+    </div>
+</div>
+Replace with:
+
+html
+<!-- Right Panel - Cart Items -->
+<div class="cart-side-panel">
+    <div class="cart-side-header">
+        <h3><i class="fas fa-shopping-cart"></i> Current Cart</h3>
+        <span id="cartCount">0 items</span>
+    </div>
+    
+    <div class="cart-side-items" id="cartSideItems">
+        <div class="empty-cart">
+            <i class="fas fa-shopping-basket"></i>
+            <p>No items in cart</p>
+            <p class="sub-text">Click cart icon on items to add</p>
+        </div>
+    </div>
+    
+    <div class="cart-side-footer">
+        <div class="cart-total-row">
+            <span>Total:</span>
+            <strong id="cartTotal">₱0.00</strong>
+        </div>
+        <a href="checkout.html" class="checkout-btn">
+            <i class="fas fa-shopping-cart"></i> Proceed to Checkout
+        </a>
+        <button class="clear-cart-btn" id="clearCartBtn">
+            <i class="fas fa-trash"></i> Clear Cart
+        </button>
+    </div>
+</div>
+Add to styles.css:
+css
+/* Cart Side Panel */
+.cart-side-panel {
+    background: white;
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    height: 100%;
+}
+
+.cart-side-header {
+    padding: 15px 20px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9fafb;
+}
+
+.cart-side-header h3 {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cart-side-header span {
+    font-size: 13px;
+    color: var(--text-light);
+    background: #e5e7eb;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.cart-side-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.cart-side-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    border: 1px solid var(--border);
+}
+
+.cart-side-item-info {
+    flex: 1;
+}
+
+.cart-side-item-name {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.cart-side-item-part {
+    font-size: 11px;
+    color: var(--text-light);
+}
+
+.cart-side-item-qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qty-badge {
+    background: var(--primary);
+    color: white;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.remove-item-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 3px 5px;
+    margin-left: 5px;
+}
+
+.remove-item-btn:hover {
+    transform: scale(1.1);
+}
+
+.cart-side-footer {
+    border-top: 2px solid var(--border);
+    padding: 15px 20px;
+    background: #f9fafb;
+}
+
+.cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.cart-total-row strong {
+    color: var(--primary);
+}
+
+.checkout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--success);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+}
+
+.checkout-btn:hover {
+    background: #047857;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(5, 150, 105, 0.3);
+}
+
+.clear-cart-btn {
+    background: none;
+    border: 2px solid var(--danger);
+    color: var(--danger);
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+}
+
+.clear-cart-btn:hover {
+    background: #fef2f2;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+}
+
+.empty-cart i {
+    font-size: 48px;
+    margin-bottom: 10px;
+    color: #d1d5db;
+    display: block;
+}
+
+.sub-text {
+    font-size: 11px;
+    margin-top: 5px;
+}
+Update in script.js - Change the updateCart() method:
+javascript
+updateCart() {
+    // Update side cart panel
+    const cartSideItems = document.getElementById('cartSideItems');
+    const cartCount = document.getElementById('cartCount');
+    const cartTotal = document.getElementById('cartTotal');
+    
+    if (this.cart.length === 0) {
+        if (cartSideItems) {
+            cartSideItems.innerHTML = `
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-basket"></i>
+                    <p>No items in cart</p>
+                    <p class="sub-text">Click cart icon on items to add</p>
+                </div>`;
+        }
+    } else {
+        if (cartSideItems) {
+            cartSideItems.innerHTML = this.cart.map(item => `
+                <div class="cart-side-item">
+                    <div class="cart-side-item-info">
+                        <div class="cart-side-item-name">${item.name}</div>
+                        <div class="cart-side-item-part">${item.partNumber} | ₱${item.price.toFixed(2)}</div>
+                    </div>
+                    <div class="cart-side-item-qty">
+                        <span class="qty-badge">${item.quantity}</span>
+                        <button class="remove-item-btn" onclick="pos.removeFromCart(${item.id})" title="Remove">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    // Update cart count
+    const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+    if (cartCount) cartCount.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+    
+    // Update total
+    const total = this.calculateSubtotal();
+    if (cartTotal) cartTotal.textContent = `₱${total.toFixed(2)}`;
+    
+    // Save cart to sessionStorage for checkout page
+    sessionStorage.setItem('currentCart', JSON.stringify(this.cart));
+}

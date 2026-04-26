@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Motor Parts POS</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <i class="fas fa-motorcycle"></i>
+                <h1>Motor Parts POS</h1>
+                <p>Inventory & Sales Management</p>
+            </div>
+
+            <div id="authError" class="auth-error"></div>
+            <div id="authSuccess" class="auth-success"></div>
+
+            <!-- First Run - Admin Setup -->
+            <div id="adminSetupSection" style="display: none;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <i class="fas fa-user-shield" style="font-size: 40px; color: #dc2626;"></i>
+                    <h3 style="margin-top: 10px;">Admin Account Setup</h3>
+                    <p style="color: #6b7280; font-size: 13px;">Create the administrator account to get started</p>
+                </div>
+                <form id="adminSetupForm">
+                    <div class="form-group input-icon">
+                        <label>Full Name</label>
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="adminName" placeholder="Enter admin name" required>
+                    </div>
+                    <div class="form-group input-icon">
+                        <label>Position</label>
+                        <i class="fas fa-briefcase"></i>
+                        <select id="adminPosition" style="width:100%;padding:12px 15px;border:2px solid #d1d5db;border-radius:10px;font-size:14px;">
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="cashier">Cashier</option>
+                        </select>
+                    </div>
+                    <div class="form-group input-icon">
+                        <label>Email</label>
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="adminEmail" placeholder="Enter admin email" required>
+                    </div>
+                    <div class="form-group input-icon">
+                        <label>Password</label>
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="adminPassword" placeholder="Create password (min 6 characters)" required minlength="6">
+                    </div>
+                    <div class="form-group input-icon">
+                        <label>Confirm Password</label>
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="adminConfirmPassword" placeholder="Confirm password" required>
+                    </div>
+                    <button type="submit" class="btn-auth">
+                        <i class="fas fa-shield-alt"></i> Create Account
+                    </button>
+                </form>
+            </div>
+
+            <!-- Login Section -->
+            <div id="loginSection">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Login</button>
+                    <button class="auth-tab" data-tab="signup">Sign Up</button>
+                </div>
+                <form class="auth-form active" id="loginForm">
+                    <div class="form-group input-icon">
+                        <label>Email</label>
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group input-icon">
+                        <label>Password</label>
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn-auth">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+                <form class="auth-form" id="signupForm">
+                    <div class="form-group input-icon">
+                        <label>Full Name</label>
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signupName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group input-icon">
+                        <label>Position</label>
+                        <i class="fas fa-briefcase"></i>
+                        <select id="signupPosition" style="width:100%;padding:12px 15px;border:2px solid #d1d5db;border-radius:10px;font-size:14px;">
+                            <option value="manager">Manager</option>
+                            <option value="cashier">Cashier</option>
+                        </select>
+                    </div>
+                    <div class="form-group input-icon">
+                        <label>Email</label>
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group input-icon">
+                        <label>Password</label>
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupPassword" placeholder="Create password (min 6 characters)" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn-auth">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs MUST come first -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase config MUST come before auth.js -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Auth.js LAST -->
+    <script src="auth.js"></script>
+</body>
+</html>
+

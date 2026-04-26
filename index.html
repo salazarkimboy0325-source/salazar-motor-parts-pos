@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor Parts POS System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <script>
+        if (!localStorage.getItem('currentUser')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <div class="pos-container">
+        <!-- Header -->
+        <header class="pos-header">
+            <div class="header-left">
+                <h1><i class="fas fa-motorcycle"></i> Salazar Motor Parts</h1>
+                <span class="store-info">Store #001 | <span id="cashierPosition"></span>: <span id="cashierName">-</span></span>
+            </div>
+            <div class="header-center">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+<input type="search" id="searchProduct" placeholder="Search parts, brands, vehicles..." autocomplete="off" name="productSearch">
+                    <button id="clearSearch"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="date-time" id="dateTime"></div>
+                <button class="btn-icon" id="helpBtn" title="Help & Tutorials"><i class="fas fa-question-circle"></i></button>
+                <button class="btn-icon" id="calculatorBtn" title="Calculator Tools"><i class="fas fa-calculator"></i></button>
+                <a href="reports.html" class="btn-icon" title="Reports" style="text-decoration: none;">
+                    <i class="fas fa-chart-bar"></i>
+                </a>
+                <a href="management.html" class="btn-icon" title="Inventory Management" style="text-decoration: none;">
+                    <i class="fas fa-boxes"></i>
+                </a>
+                <button class="btn-icon" id="settingsBtn" title="Settings"><i class="fas fa-cog"></i></button>
+            </div>
+        </header>
+
+        <div class="pos-main">
+            <!-- Left Panel - Quick Add & Inventory -->
+            <div class="products-panel">
+                <!-- Inventory Table -->
+                <div class="inventory-section">
+                <div class="inventory-header">
+                    <h3><i class="fas fa-warehouse"></i> Inventory</h3>
+                    <div class="inventory-controls">
+                        <select id="categoryFilter" onchange="pos.filterByCategory(this.value)">
+                            <option value="all">All Categories</option>
+                            <!-- Categories will be populated dynamically -->
+                        </select>
+                        <button class="btn-icon" id="refreshInventory" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                </div>
+                    <div class="inventory-table-container">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>Part Number</th>
+                                    <th>Part Name</th>
+                                    <th>Category</th>
+                                    <th>Vehicles</th>
+                                    <th>Price (₱)</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <tr class="empty-state">
+                                    <td colspan="7">
+                                        <i class="fas fa-box-open"></i>
+                                        <p>No parts in inventory yet</p>
+                                        <p class="sub-text">Click "Add New Part" to get started</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Cart Items -->
+            <div class="cart-side-panel">
+                <div class="cart-side-header">
+                    <h3><i class="fas fa-shopping-cart"></i> Current Cart</h3>
+                    <span id="cartCount">0 items</span>
+                </div>
+                
+                <div class="cart-side-items" id="cartSideItems">
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>No items in cart</p>
+                        <p class="sub-text">Click cart icon on items to add</p>
+                    </div>
+                </div>
+                
+                <div class="cart-side-footer">
+                    <div class="cart-total-row">
+                        <span>Total:</span>
+                        <strong id="cartTotal">₱0.00</strong>
+                    </div>
+                    <a href="checkout.html" class="checkout-btn">
+                        <i class="fas fa-shopping-cart"></i> Proceed to Checkout
+                    </a>
+                    <button class="clear-cart-btn" id="clearCartBtn">
+                        <i class="fas fa-trash"></i> Clear Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receipt Modal -->
+        <div class="modal" id="receiptModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-receipt"></i> Sales Receipt</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="receiptContent">
+                    <!-- Receipt will be generated here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="printReceipt"><i class="fas fa-print"></i> Print Receipt</button>
+                    <button class="btn-primary" id="newSale">New Sale</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales History Modal -->
+        <div class="modal" id="salesHistoryModal">
+            <div class="modal-content modal-lg">
+                <div class="modal-header">
+                    <h2><i class="fas fa-history"></i> Sales History</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="sales-summary" id="salesSummary">
+                        <div class="summary-card">
+                            <h4>Total Sales Today</h4>
+                            <span id="totalSalesToday">₱0.00</span>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Transactions</h4>
+                            <span id="totalTransactions">0</span>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Items Sold</h4>
+                            <span id="totalItemsSold">0</span>
+                        </div>
+                    </div>
+                    <div class="sales-history-table-container">
+                        <table class="sales-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Receipt #</th>
+                                    <th>Date/Time</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesHistoryBody">
+                                <tr class="empty-state">
+                                    <td colspan="7">
+                                        <i class="fas fa-receipt"></i>
+                                        <p>No sales recorded yet</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help/Tutorial Modal -->
+        <div class="modal" id="helpModal">
+            <div class="modal-content modal-lg">
+                <div class="modal-header">
+                    <h2><i class="fas fa-question-circle"></i> Help & Tutorials</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="tutorial-tabs">
+                        <button class="tutorial-tab active" data-tab="overview">Overview</button>
+                        <button class="tutorial-tab" data-tab="inventory">Inventory</button>
+                        <button class="tutorial-tab" data-tab="cart">Cart & Checkout</button>
+                        <button class="tutorial-tab" data-tab="management">Management</button>
+                        <button class="tutorial-tab" data-tab="reports">Reports</button>
+                        <button class="tutorial-tab" data-tab="shortcuts">Shortcuts</button>
+                    </div>
+                    
+                    <div class="tutorial-content">
+                        <!-- Overview Tab -->
+                        <div class="tutorial-panel active" id="tab-overview">
+                            <h3><i class="fas fa-store"></i> Welcome to Motor Parts POS</h3>
+                            <p>This Point of Sale system is designed for motor parts shops. Here's a quick overview:</p>
+                            
+                            <div class="tutorial-steps">
+                                <div class="tutorial-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>Main Inventory Page</h4>
+                                        <p>Browse and search your inventory. Click the <i class="fas fa-cart-plus" style="color: #dc2626;"></i> icon to add items to cart.</p>
+                                    </div>
+                                </div>
+                                <div class="tutorial-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>Cart Panel (Right Side)</h4>
+                                        <p>View items in your cart. Click <strong>"Proceed to Checkout"</strong> when ready.</p>
+                                    </div>
+                                </div>
+                                <div class="tutorial-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>Checkout Page</h4>
+                                        <p>Review items, apply discounts, choose payment method, and complete the sale.</p>
+                                    </div>
+                                </div>
+                                <div class="tutorial-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h4>Management Page</h4>
+                                        <p>Add, edit, delete products. Manage categories and bulk import items.</p>
+                                    </div>
+                                </div>
+                                <div class="tutorial-step">
+                                    <div class="step-number">5</div>
+                                    <div class="step-content">
+                                        <h4>Reports Page</h4>
+                                        <p>View sales analytics, track expenses, monitor low stock items.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tutorial-navigation">
+                                <p><strong>Navigation Buttons (Top Right):</strong></p>
+                                <ul>
+                                    <li><i class="fas fa-chart-bar"></i> <strong>Reports</strong> - View analytics and reports</li>
+                                    <li><i class="fas fa-boxes"></i> <strong>Management</strong> - Manage inventory and products</li>
+                                    <li><i class="fas fa-cog"></i> <strong>Settings</strong> - System settings</li>
+                                    <li><i class="fas fa-question-circle"></i> <strong>Help</strong> - This tutorial</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Inventory Tab -->
+                        <div class="tutorial-panel" id="tab-inventory">
+                            <h3><i class="fas fa-warehouse"></i> Inventory Guide</h3>
+                            
+                            <div class="tutorial-section">
+                                <h4>Searching Products</h4>
+                                <p>Use the search bar at the top to find products by:</p>
+                                <ul>
+                                    <li><strong>Part Name</strong> - e.g., "Brake Pad"</li>
+                                    <li><strong>Part Number/SKU</strong> - e.g., "BRK-001"</li>
+                                    <li><strong>Barcode</strong> - Scan or type barcode</li>
+                                    <li><strong>Brand</strong> - e.g., "NGK", "Brembo"</li>
+                                    <li><strong>Vehicle</strong> - e.g., "Honda Civic"</li>
+                                    <li><strong>Category</strong> - e.g., "brake", "engine"</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h4>Category Filter</h4>
+                                <p>Use the dropdown below the inventory header to filter by category.</p>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h4>Adding Items to Cart</h4>
+                                <p>Click the <span style="background:#dc2626;color:white;padding:3px 8px;border-radius:4px;"><i class="fas fa-cart-plus"></i></span> button on any item to add it to cart.</p>
+                                <p><strong>Note:</strong> Out of stock items cannot be added to cart. They show a grayed out button.</p>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h4>Stock Indicators</h4>
+                                <ul>
+                                    <li><span style="color:#059669;">Normal</span> - Item is in stock</li>
+                                    <li><span style="color:#d97706;">Low Stock (≤5)</span> - Running low</li>
+                                    <li><span style="color:#dc2626;">Out of Stock (0)</span> - Needs restock</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Cart Tab -->
+                        <div class="tutorial-panel" id="tab-cart">
+                            <h3><i class="fas fa-shopping-cart"></i> Cart & Checkout Guide</h3>
+                            
+                            <div class="tutorial-section">
+                                <h4>Managing Cart</h4>
+                                <ul>
+                                    <li><strong>View Cart:</strong> Right panel shows all items with quantities</li>
+                                    <li><strong>Remove Item:</strong> Click the <i class="fas fa-times-circle" style="color:#dc2626;"></i> button</li>
+                                    <li><strong>Clear Cart:</strong> Click "Clear Cart" button at bottom</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h4>Checkout Process</h4>
+                                <ol>
+                                    <li>Click <strong>"Proceed to Checkout"</strong></li>
+                                    <li>Enter customer name (optional)</li>
+                                    <li>Enter vehicle info (optional)</li>
+                                    <li>Apply discount if needed (% or amount)</li>
+                                    <li>Choose payment method</li>
+                                    <li>Enter payment details</li>
+                                    <li>Click <strong>"Process Payment"</strong></li>
+                                    <li>Receipt will be displayed</li>
+                                </ol>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h4>Payment Methods</h4>
+                                <ul>
+                                    <li><strong>Cash:</strong> Enter amount received, system calculates change</li>
+                                    <li><strong>Card:</strong> Enter card details</li>
+                                    <li><strong>GCash:</strong> Enter reference number</li>
+                                    <li><strong>Bank Transfer:</strong> Select bank and enter reference</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Management Tab -->
+                        <div class="tutorial-panel" id="tab-management">
+                            <h3><i class="fas fa-tools"></i> Management Guide</h3>
+                            
+                            <div class="tutorial-section">
+                                <h4>Adding a New Part</h4>
+                                <ol>
+                                    <li>Click <strong>"Add New Part"</strong></li>
+                                    <li>Fill in required fields (*):</li>
+                                    <ul>
+                                        <li>Part Number/SKU</li>
+                                        <li>Part Name</li>
+                                        <li>Unit Price</li>
+                                    </ul>
+                                    <li>Optional fields: Category, Brand, Vehicles, Cost, Stock, Supplier</li>
+                                    <li>Click <strong>"Save Part"</strong></li>
+                                </ol>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h4>Bulk Import</h4>
+                                <p>Add multiple parts at once:</p>
+                                <ol>
+                                    <li>Click <strong>"Bulk Add"</strong></li>
+                                    <li>Enter one part per line in format:</li>
+                                    <code>PartNumber, Name, Category, Price, Cost, Stock, Brand, Supplier</code>
+                                    <li>Example: <code>BRK-001, Brake Pad Set, brake, 45.00, 30.00, 10, Brembo, AutoSupply</code></li>
+                                </ol>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h4>Managing Categories</h4>
+                                <ul>
+                                    <li>Click <strong>"Categories"</strong> button</li>
+                                    <li>Add new categories</li>
+                                    <li>Rename existing categories</li>
+                                    <li>Delete unused categories</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Reports Tab -->
+                        <div class="tutorial-panel" id="tab-reports">
+                            <h3><i class="fas fa-chart-bar"></i> Reports Guide</h3>
+                            
+                            <div class="tutorial-section">
+                                <h4>Available Reports</h4>
+                                <ul>
+                                    <li><strong>Summary Cards:</strong> Total sales, revenue, customers, items sold</li>
+                                    <li><strong>Sales Chart:</strong> Daily, weekly, or monthly sales trends</li>
+                                    <li><strong>Top Selling Items:</strong> Best performing products</li>
+                                    <li><strong>Low Stock Alert:</strong> Items needing restock</li>
+                                    <li><strong>Sales by Category:</strong> Revenue breakdown</li>
+                                    <li><strong>Payment Methods:</strong> How customers pay</li>
+                                    <li><strong>Recent Transactions:</strong> All sales in date range</li>
+                                    <li><strong>Expense Tracker:</strong> Track business expenses</li>
+                                    <li><strong>Inventory Valuation:</strong> Total stock value</li>
+                                    <li><strong>Top Customers:</strong> Best customers</li>
+                                    <li><strong>Hourly Sales:</strong> Peak hours</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h4>Date Range</h4>
+                                <p>Use the date buttons or custom date picker to filter all reports by time period.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Shortcuts Tab -->
+                        <div class="tutorial-panel" id="tab-shortcuts">
+                            <h3><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
+                            
+                            <table class="shortcuts-table">
+                                <thead>
+                                    <tr>
+                                        <th>Key</th>
+                                        <th>Action</th>
+                                        <th>Page</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><kbd>F8</kbd></td>
+                                        <td>Process Payment</td>
+                                        <td>Checkout</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>F2</kbd></td>
+                                        <td>Open Add Item Modal</td>
+                                        <td>Management</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>Esc</kbd></td>
+                                        <td>Close Modal/Popup</td>
+                                        <td>All Pages</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>Enter</kbd></td>
+                                        <td>Search/Add to Cart</td>
+                                        <td>Inventory</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <div class="tutorial-section">
+                                <h4>Tips & Tricks</h4>
+                                <ul>
+                                    <li><strong>Quick Search:</strong> Type in search bar and press Enter to add matching item to cart</li>
+                                    <li><strong>Quick Cash:</strong> Click preset amounts (₱50, ₱100, etc.) for fast cash payment</li>
+                                    <li><strong>Data Persistence:</strong> All data is saved automatically in your browser</li>
+                                    <li><strong>Export:</strong> Download transactions and low stock lists as CSV files</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary close-modal-btn">Close</button>
+                </div>
+            </div>
+        </div>
+        <!-- Calculator Modal -->
+        <div class="modal" id="calculatorModal">
+            <div class="modal-content modal-lg">
+                <div class="modal-header">
+                    <h2><i class="fas fa-calculator"></i> Calculator Tools</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="calculator-tabs">
+                        <button class="calc-tab active" data-tab="markup">Markup Calculator</button>
+                        <button class="calc-tab" data-tab="margin">Profit Margin</button>
+                        <button class="calc-tab" data-tab="discount">Discount Calculator</button>
+                        <button class="calc-tab" data-tab="vat">VAT Calculator</button>
+                        <button class="calc-tab" data-tab="cost">Cost Splitter</button>
+                        <button class="calc-tab" data-tab="bulk">Bulk Pricing</button>
+                    </div>
+
+                    <div class="calculator-panels">
+                        <!-- Markup Calculator -->
+                        <div class="calc-panel active" id="panel-markup">
+                            <h3><i class="fas fa-tag"></i> Markup Calculator</h3>
+                            <p class="calc-desc">Calculate selling price based on cost and markup percentage.</p>
+                            <div class="calc-form">
+                                <div class="form-group">
+                                    <label>Cost Price (₱)</label>
+                                    <input type="number" id="markupCost" placeholder="Enter cost price" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Markup Percentage (%)</label>
+                                    <input type="number" id="markupPercent" placeholder="Enter markup %" step="0.01">
+                                </div>
+                                <button class="btn-primary" id="calcMarkup">Calculate</button>
+                                <div class="calc-results" id="markupResults" style="display:none;">
+                                    <div class="calc-result-row">
+                                        <span>Markup Amount:</span>
+                                        <strong id="markupAmount">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Selling Price:</span>
+                                        <strong id="markupSellingPrice">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Profit Margin:</span>
+                                        <strong id="markupProfitMargin">0%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profit Margin Calculator -->
+                        <div class="calc-panel" id="panel-margin">
+                            <h3><i class="fas fa-chart-pie"></i> Profit Margin Calculator</h3>
+                            <p class="calc-desc">Calculate profit margin percentage from cost and selling price.</p>
+                            <div class="calc-form">
+                                <div class="form-group">
+                                    <label>Cost Price (₱)</label>
+                                    <input type="number" id="marginCost" placeholder="Enter cost price" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Selling Price (₱)</label>
+                                    <input type="number" id="marginSelling" placeholder="Enter selling price" step="0.01">
+                                </div>
+                                <button class="btn-primary" id="calcMargin">Calculate</button>
+                                <div class="calc-results" id="marginResults" style="display:none;">
+                                    <div class="calc-result-row">
+                                        <span>Profit Amount:</span>
+                                        <strong id="marginProfit">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Profit Margin:</span>
+                                        <strong id="marginPercent">0%</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Markup Percentage:</span>
+                                        <strong id="marginMarkup">0%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Discount Calculator -->
+                        <div class="calc-panel" id="panel-discount">
+                            <h3><i class="fas fa-percent"></i> Discount Calculator</h3>
+                            <p class="calc-desc">Calculate final price after discount.</p>
+                            <div class="calc-form">
+                                <div class="form-group">
+                                    <label>Original Price (₱)</label>
+                                    <input type="number" id="discOrigPrice" placeholder="Enter original price" step="0.01">
+                                </div>
+                                <div class="form-row-calc">
+                                    <div class="form-group">
+                                        <label>Discount %</label>
+                                        <input type="number" id="discPercent" placeholder="%" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>or Amount (₱)</label>
+                                        <input type="number" id="discAmount" placeholder="₱" step="0.01">
+                                    </div>
+                                </div>
+                                <button class="btn-primary" id="calcDiscount">Calculate</button>
+                                <div class="calc-results" id="discountResults" style="display:none;">
+                                    <div class="calc-result-row">
+                                        <span>Discount Amount:</span>
+                                        <strong id="discResultAmount">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row highlight">
+                                        <span>Final Price:</span>
+                                        <strong id="discFinalPrice">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>You Save:</span>
+                                        <strong id="discSavePercent">0%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VAT Calculator -->
+                        <div class="calc-panel" id="panel-vat">
+                            <h3><i class="fas fa-file-invoice"></i> VAT Calculator</h3>
+                            <p class="calc-desc">Add or remove VAT from a price.</p>
+                            <div class="calc-form">
+                                <div class="form-group">
+                                    <label>Amount (₱)</label>
+                                    <input type="number" id="vatAmount" placeholder="Enter amount" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>VAT Rate (%)</label>
+                                    <input type="number" id="vatRate" value="12" step="0.01">
+                                </div>
+                                <div class="calc-buttons">
+                                    <button class="btn-primary" id="calcAddVat">Add VAT</button>
+                                    <button class="btn-secondary" id="calcRemoveVat">Remove VAT</button>
+                                </div>
+                                <div class="calc-results" id="vatResults" style="display:none;">
+                                    <div class="calc-result-row">
+                                        <span>VAT Amount:</span>
+                                        <strong id="vatResultAmount">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row highlight">
+                                        <span>Result:</span>
+                                        <strong id="vatResultFinal">₱0.00</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cost Splitter -->
+                        <div class="calc-panel" id="panel-cost">
+                            <h3><i class="fas fa-divide"></i> Cost Per Unit Calculator</h3>
+                            <p class="calc-desc">Calculate cost per unit when buying in bulk.</p>
+                            <div class="calc-form">
+                                <div class="form-group">
+                                    <label>Total Cost (₱)</label>
+                                    <input type="number" id="splitTotal" placeholder="Total amount paid" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Number of Units</label>
+                                    <input type="number" id="splitUnits" placeholder="Quantity" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label>Additional Costs (Shipping, etc.)</label>
+                                    <input type="number" id="splitAdditional" placeholder="Additional costs" step="0.01" value="0">
+                                </div>
+                                <button class="btn-primary" id="calcSplit">Calculate</button>
+                                <div class="calc-results" id="splitResults" style="display:none;">
+                                    <div class="calc-result-row">
+                                        <span>Total Investment:</span>
+                                        <strong id="splitTotalInvest">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row highlight">
+                                        <span>Cost Per Unit:</span>
+                                        <strong id="splitCostPerUnit">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Suggested Selling Price (30% margin):</span>
+                                        <strong id="splitSuggested">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Suggested Selling Price (50% margin):</span>
+                                        <strong id="splitSuggested50">₱0.00</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bulk Pricing Calculator -->
+                        <div class="calc-panel" id="panel-bulk">
+                            <h3><i class="fas fa-layer-group"></i> Bulk Pricing Calculator</h3>
+                            <p class="calc-desc">Calculate total revenue and profit for bulk sales.</p>
+                            <div class="calc-form">
+                                <div class="form-group">
+                                    <label>Cost Per Unit (₱)</label>
+                                    <input type="number" id="bulkCostUnit" placeholder="Cost per unit" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Selling Price Per Unit (₱)</label>
+                                    <input type="number" id="bulkSellUnit" placeholder="Selling price per unit" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Quantity</label>
+                                    <input type="number" id="bulkQuantity" placeholder="Number of units" min="1">
+                                </div>
+                                <button class="btn-primary" id="calcBulk">Calculate</button>
+                                <div class="calc-results" id="bulkResults" style="display:none;">
+                                    <div class="calc-result-row">
+                                        <span>Total Cost:</span>
+                                        <strong id="bulkTotalCost">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Total Revenue:</span>
+                                        <strong id="bulkTotalRevenue">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row highlight">
+                                        <span>Total Profit:</span>
+                                        <strong id="bulkTotalProfit">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Profit Per Unit:</span>
+                                        <strong id="bulkProfitUnit">₱0.00</strong>
+                                    </div>
+                                    <div class="calc-result-row">
+                                        <span>Profit Margin:</span>
+                                        <strong id="bulkMargin">0%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary close-modal-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-cog"></i> Settings</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Employee Management -->
+                    <div class="settings-section">
+                        <h3><i class="fas fa-users"></i> Employee Management</h3>
+                        <button class="btn-primary" id="addEmployeeBtn">
+                            <i class="fas fa-user-plus"></i> Add Employee
+                        </button>
+                        <div class="employee-list" id="employeeList" style="margin-top: 15px; max-height: 200px; overflow-y: auto;">
+                            <!-- Employees loaded here -->
+                        </div>
+                    </div>
+                    
+                    <hr style="margin: 20px 0; border-color: var(--border);">
+                    
+                    <!-- Danger Zone -->
+                    <div class="settings-section">
+                        <h3 style="color: #dc2626;"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+                        <p style="color: #6b7280; font-size: 13px; margin-bottom: 10px;">These actions cannot be undone. Proceed with caution.</p>
+                        <button class="btn-danger" id="deleteAllSalesBtn" style="width: 100%; padding: 12px; margin-bottom: 10px;">
+                            <i class="fas fa-trash"></i> Delete All Sales Data
+                        </button>
+                        <button class="btn-danger" id="resetInventoryBtn" style="width: 100%; padding: 12px; margin-bottom: 10px;">
+                            <i class="fas fa-undo"></i> Reset All Inventory
+                        </button>
+                        <button class="btn-danger" id="wipeAllDataBtn" style="width: 100%; padding: 12px;">
+                            <i class="fas fa-skull"></i> Wipe ALL Data
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="logoutFromSettings">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                    <button class="btn-secondary close-modal-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Employee Modal -->
+        <div class="modal" id="addEmployeeModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-user-plus"></i> Add Employee</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="empName" placeholder="Employee name">
+                    </div>
+                    <div class="form-group">
+                        <label>Position *</label>
+                        <select id="empPosition">
+                            <option value="manager">Manager</option>
+                            <option value="cashier">Cashier</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="empEmail" placeholder="Employee email">
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="empPassword" placeholder="Password (min 6 characters)">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary close-modal-btn">Cancel</button>
+                    <button class="btn-primary" id="saveEmployee">Save Employee</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase config -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Page scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
