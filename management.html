@@ -6,6 +6,12 @@
     <title>Inventory Management - Motor Parts POS</title>
     <link rel="stylesheet" href="management.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="SMP POS">
+    <link rel="apple-touch-icon" href="/apple-icon-180x180.png">
+    <meta name="theme-color" content="#dc2626">
 </head>
 <body>
     <script>
@@ -420,5 +426,14 @@ ENG-001, Piston Ring, engine, 25.50, 18.00, 15, NPR, MotorParts Inc."></textarea
 
     <!-- Page scripts -->
     <script src="management.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(() => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>

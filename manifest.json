@@ -1,0 +1,23 @@
+{
+  "name": "Salazar Motor Parts POS",
+  "short_name": "SMP POS",
+  "description": "Point of Sale System for Motor Parts",
+  "start_url": "/login.html",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#dc2626",
+  "orientation": "landscape",
+"icons": [
+    {
+      "src": "/android-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
+
